@@ -1,17 +1,14 @@
-import './App.css';
-
-import navBar from './components/navBar/navBar';
-import contentSpace from './components/contentSpace/contentSpace';
-
+import './App.scss';
 
 function App() {
     return (
-        <div>
-            <div>
-                <contentSpace />
-            </div> 
-            <div>
-                <navBar />
+        <div className='container'>
+            <div className='container__header'>
+            </div>
+            <div className='container__body'>
+            </div>
+            <div className='container__footer'>
+
             </div>
         </div>
     );
