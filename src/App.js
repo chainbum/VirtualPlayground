@@ -6,9 +6,11 @@ function App() {
             <div className='container__header'>
             </div>
             <div className='container__body'>
+                <div className='container__body-mint'>
+                    
+                </div>
             </div>
             <div className='container__footer'>
-
             </div>
         </div>
     );
