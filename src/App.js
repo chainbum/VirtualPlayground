@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import MintWhiteList from './components/MintWhiteList/MintWhiteList';
 
 import './App.scss';
 
 const App = () => {
-    
     const [currentAccount, setCurrentAccount] = useState("");
     
     const checkIfWalletIsConnected = async () => {
         const { ethereum } = window;
+
+        console.log(ethereum)
 
         if (!ethereum) {
             console.log('Make sure you have MetaMask!');
@@ -58,6 +59,12 @@ const App = () => {
         }
     };
 
+    const renderNotConnectedContainer = () => (
+        <div>
+            <button onClick={connectWallet}>connect wallet</button> <br />
+        </div>
+    );
+
     useEffect(() => {
         checkIfWalletIsConnected();
     }, []);
@@ -67,14 +74,11 @@ const App = () => {
             <div className='container__header'>
             </div>
             <div className='container__body'>
-                <div>
-                    <button onClick={connectWallet}>connect wallet</button> <br />
-                    {
-                        currentAccount.length > 0 
-                        ? `Connected Account: ${currentAccount}`
-                        : 'No connected account'
-                    }
-                </div>
+                {currentAccount === "" ? (
+                        renderNotConnectedContainer()
+                    ) : (
+                        <MintWhiteList currentAccount={currentAccount} />
+                )}
             </div>
             <div className='container__footer'>
             </div>
