@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Mint from './components/Mint/Mint';
 import Wallet from './components/Wallet/Wallet';
-import pc from './static/pc.png'
+import ohshit from './static/ohshit_final.gif';
 
 import './App.scss';
 
@@ -52,7 +52,7 @@ const App = () => {
             </div>
             <div className='container__body'>
                 <div className='container__body-title'>
-                    <img src={pc} alt="WTF" />
+                    <img src={ohshit} alt="WTF" />
                 </div>
                 {currentAccount.length > 0 && (
                     <Mint currentAccount={currentAccount} />
