@@ -11,6 +11,7 @@ const MintWhiteList = (props) => {
     const [maxMintAmount, setMaxMintAmount] = useState(0);
     const [mintAmount, setMintAmount] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [debug, setDebug] = useState('');
     const PRICE = 0.08;
 
     const getNumAvailableToMint = async () => {
@@ -44,18 +45,19 @@ const MintWhiteList = (props) => {
                 const value = PRICE * mintAmount;
                 const options = {value: ethers.utils.parseEther(value.toString())}
 
-                setLoading(true);
                 const txn = await connectedSmartContract.mintWhiteList(mintAmount, options);
+                setLoading(true);
                 await txn.wait();
                 setLoading(false);
-                
-                console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${txn.hash}`);
+                setDebug(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${txn.hash}`);
 
             } else {
                 console.log("Ethereum object doesn't exist!");
             }
         } catch (err) {
             console.log(err)
+            setLoading(false);
+            setDebug('Error: ' + JSON.stringify(err?.reason));
         }
     };
 
@@ -92,6 +94,13 @@ const MintWhiteList = (props) => {
             {
                 loading 
                 ? 'loading ...'
+                : ''
+            }
+        </div>
+        <div>
+            {
+                debug
+                ? debug
                 : ''
             }
         </div>
