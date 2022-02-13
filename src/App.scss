@@ -16,6 +16,13 @@
         height: 70%;
         border-radius: 10px;
         margin: auto;
+
+        &-title {
+            text-align: center;
+            img {
+                max-width: 35%;
+            }
+        }
     }
 
     &__footer {

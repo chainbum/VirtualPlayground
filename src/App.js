@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import MintWhiteList from './components/MintWhiteList/MintWhiteList';
+import Mint from './components/Mint/Mint';
+import Wallet from './components/Wallet/Wallet';
+import pc from './static/pc.png'
 
 import './App.scss';
 
@@ -8,8 +10,6 @@ const App = () => {
     
     const checkIfWalletIsConnected = async () => {
         const { ethereum } = window;
-
-        console.log(ethereum)
 
         if (!ethereum) {
             console.log('Make sure you have MetaMask!');
@@ -33,37 +33,10 @@ const App = () => {
             console.log('found authorized account:', account);
             setCurrentAccount(account);
 
-            // setupEventListener();
         } else {
             console.log("No authorized account found")
         }
     }
-
-    const connectWallet = async () => {
-        try {
-            const { ethereum } = window;
-
-            if (!ethereum) {
-                alert('Get MetaMask!');
-                return;
-            }
-            const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-            console.log('Connected:', accounts[0]);
-            setCurrentAccount(accounts[0]);
-            
-            // setupEventListener();
-            return alert('Account connected!');
-        } catch(err) {
-            console.log(err);
-
-        }
-    };
-
-    const renderNotConnectedContainer = () => (
-        <div>
-            <button onClick={connectWallet}>connect wallet</button> <br />
-        </div>
-    );
 
     useEffect(() => {
         checkIfWalletIsConnected();
@@ -72,12 +45,17 @@ const App = () => {
     return (
         <div className='container'>
             <div className='container__header'>
+                <Wallet
+                  currentAccount={currentAccount}
+                  setCurrentAccount={setCurrentAccount} 
+                />
             </div>
             <div className='container__body'>
-                {currentAccount === "" ? (
-                        renderNotConnectedContainer()
-                    ) : (
-                        <MintWhiteList currentAccount={currentAccount} />
+                <div className='container__body-title'>
+                    <img src={pc} alt="WTF" />
+                </div>
+                {currentAccount.length > 0 && (
+                    <Mint currentAccount={currentAccount} />
                 )}
             </div>
             <div className='container__footer'>

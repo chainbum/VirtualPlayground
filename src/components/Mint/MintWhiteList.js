@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import WebTimeFolks from '../../utils/WebTimeFolks.json'
 import consts from '../../consts';
+import WebTimeFolks from '../../utils/WebTimeFolks.json'
+
+import './Mint.scss';
 
 const MintWhiteList = (props) => {
     const { currentAccount } = props;
-    const [numAvailableToMint, setNumAvailableToMint] = useState(0);
-    const [mintAmount, setMintAmount] = useState(0);
+
+    const [maxMintAmount, setMaxMintAmount] = useState(0);
+    const [mintAmount, setMintAmount] = useState(1);
+    const [loading, setLoading] = useState(false);
     const PRICE = 0.08;
 
     const getNumAvailableToMint = async () => {
@@ -18,8 +22,8 @@ const MintWhiteList = (props) => {
                 const signer = provider.getSigner();
                 const connectedSmartContract = new ethers.Contract(consts.CONTRACT_ADDRESS, WebTimeFolks.abi, signer);
 
-                const amount = await connectedSmartContract.numAvailableToMint(currentAccount);
-                setNumAvailableToMint(amount);
+                const amount = await connectedSmartContract.getNumAvailableToMint(currentAccount);
+                setMaxMintAmount(amount);
 
             } else {
                 console.log("Ethereum object doesn't exist!");
@@ -37,10 +41,13 @@ const MintWhiteList = (props) => {
                 const provider = new ethers.providers.Web3Provider(ethereum);
                 const signer = provider.getSigner();
                 const connectedSmartContract = new ethers.Contract(consts.CONTRACT_ADDRESS, WebTimeFolks.abi, signer);
+                const value = PRICE * mintAmount;
+                const options = {value: ethers.utils.parseEther(value.toString())}
 
-                const txn = await connectedSmartContract.mintWhiteList(PRICE, mintAmount);
-
+                setLoading(true);
+                const txn = await connectedSmartContract.mintWhiteList(mintAmount, options);
                 await txn.wait();
+                setLoading(false);
                 
                 console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${txn.hash}`);
 
@@ -52,37 +59,41 @@ const MintWhiteList = (props) => {
         }
     };
 
-    const decrement = () => {
+    const decrementCount = () => {
         let currAmount = mintAmount - 1;
-        if (currAmount < 0) {
-            currAmount = 0
+        if (currAmount < 1) {
+            currAmount = 1
         }
         setMintAmount(currAmount);
     };
 
-    const increment = () => {
+    const incrementCount = () => {
         let currAmount = mintAmount + 1;
-        if (currAmount > numAvailableToMint) {
-            currAmount = numAvailableToMint
+        if (currAmount > maxMintAmount) {
+            currAmount = maxMintAmount
         }
         setMintAmount(currAmount);
     };
 
     useEffect(() => {
         getNumAvailableToMint();
-    }, [currentAccount]);
+    }, [loading]);
 
     return <div>
+        <h3>{`Number Available to Mint: ${maxMintAmount}`}</h3>
+        
         <div>
-            <h3>{`Number Available to Mint: ${numAvailableToMint}`}</h3>
-        </div>
-        <div>
-            <button onClick={decrement}>decrement</button>
+            <button onClick={decrementCount}>decrement</button>
             {mintAmount}
-            <button onClick={increment}>increment</button>
+            <button onClick={incrementCount}>increment</button>
         </div>
         <div>
             <button onClick={mint}>{`Mint ${mintAmount} folks`}</button>
+            {
+                loading 
+                ? 'loading ...'
+                : ''
+            }
         </div>
     </div>
 }
