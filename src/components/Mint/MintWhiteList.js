@@ -5,34 +5,15 @@ import WebTimeFolks from '../../utils/WebTimeFolks.json'
 
 import './Mint.scss';
 
+
 const MintWhiteList = (props) => {
     const { currentAccount } = props;
 
     const [maxMintAmount, setMaxMintAmount] = useState(0);
-    const [mintAmount, setMintAmount] = useState(1);
+    const [mintAmount, setMintAmount] = useState();
     const [loading, setLoading] = useState(false);
     const [debug, setDebug] = useState('');
     const PRICE = 0.08;
-
-    const getNumAvailableToMint = async () => {
-        try {
-            const { ethereum } = window;
-
-            if (ethereum) {
-                const provider = new ethers.providers.Web3Provider(ethereum);
-                const signer = provider.getSigner();
-                const connectedSmartContract = new ethers.Contract(consts.CONTRACT_ADDRESS, WebTimeFolks.abi, signer);
-
-                const amount = await connectedSmartContract.getNumAvailableToMint(currentAccount);
-                setMaxMintAmount(amount);
-
-            } else {
-                console.log("Ethereum object doesn't exist!");
-            }
-        } catch (err) {
-            console.log(err)
-        }
-    };
 
     const mint = async () => {
         try {
@@ -78,32 +59,59 @@ const MintWhiteList = (props) => {
     };
 
     useEffect(() => {
+        const getNumAvailableToMint = async () => {
+            try {
+                const { ethereum } = window;
+    
+                if (ethereum) {
+                    const provider = new ethers.providers.Web3Provider(ethereum);
+                    const signer = provider.getSigner();
+                    const connectedSmartContract = new ethers.Contract(consts.CONTRACT_ADDRESS, WebTimeFolks.abi, signer);
+    
+                    const amount = await connectedSmartContract.getNumAvailableToMint(currentAccount);
+                    setMaxMintAmount(amount);
+    
+                } else {
+                    console.log("Ethereum object doesn't exist!");
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        };
         getNumAvailableToMint();
-    }, [loading]);
+    }, [loading, currentAccount]);
+
+    useEffect(() => {
+        setMintAmount(maxMintAmount);
+    }, [maxMintAmount]);
 
     return <div>
-        <h3>{`Number Available to Mint: ${maxMintAmount}`}</h3>
-        
-        <div>
-            <button onClick={decrementCount}>decrement</button>
-            {mintAmount}
-            <button onClick={incrementCount}>increment</button>
-        </div>
-        <div>
-            <button onClick={mint}>{`Mint ${mintAmount} folks`}</button>
-            {
-                loading 
-                ? 'loading ...'
-                : ''
-            }
-        </div>
-        <div>
-            {
-                debug
-                ? debug
-                : ''
-            }
-        </div>
+        <h3>WhiteList Mint</h3>
+        <p>{`Number Available to Mint: ${maxMintAmount}`}</p>
+        {maxMintAmount > 0 && (
+            <div>
+                <div>
+                    <button onClick={decrementCount}>decrement</button>
+                    {mintAmount}
+                    <button onClick={incrementCount}>increment</button>
+                </div>
+                <div>
+                    <button onClick={mint}>{`Mint ${mintAmount} folks`}</button>
+                    {
+                        loading
+                        ? 'loading ...'
+                        : ''
+                    }
+                </div>
+                <div>
+                    {
+                        debug
+                        ? debug
+                        : ''
+                    }
+                </div>
+            </div>
+        )}
     </div>
 }
 
